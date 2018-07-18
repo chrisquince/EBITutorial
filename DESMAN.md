@@ -177,13 +177,13 @@ We start from the base frequencies on all genes.
 ```
 mkdir ~/Projects/DESMANTutorial/AllFreq
 cd ~/Projects/DESMANTutorial/AllFreq
-wget https://desmantutorial.s3.climb.ac.uk/TARA_PSW_MAG_00074.freq
+cp ~/DESMAN_Data/TARA_PSW_MAG_00074.freq .
 ```
 
 Then we find SNVs notice the lack of '-p' option for efficiency. With more time I would probably apply that.
 
 ```
-python $DESMAN/desman/Variant_Filter.py TARA_PSW_MAG_00074.freq -o TARA_PSW_MAG_00074 -m 0. -f 25.0
+Variant_Filter.py TARA_PSW_MAG_00074.freq -o TARA_PSW_MAG_00074 -m 0. -f 25.0
 ```
 
 Then we need gene coverages:
