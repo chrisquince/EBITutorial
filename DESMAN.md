@@ -1,48 +1,41 @@
 ## DESMAN TARA Tutorial
 
 We are going to locate ecotypes in one of the TARA MAGs, a SAR11 relative TARA_PSW_MAG_00074.
-We begin by downloading the Ebame3 repo onto our VMs which has some useful scripts.
-Log into the computers:
-
-```
-ssh ubuntu@myVM
-```
+The data are preloaded in the DESMAN_Data directory. Useful scripts are in the Ebame3 repository.
 
 ```
 cd ~/repos
-git clone https://github.com/chrisquince/Ebame3.git
-```
-
-We will also need to install the maps package into R:
-
-```
-sudo R
->install.packages('maps')
->q()
+git clone https://github.com/chrisquince/MAGAnalysis.git
+cd ..
 ```
 
 Create a directory to work in:
-
 ```
+mkdir Projects
 cd ~/Projects
 mkdir DESMANTutorial
 cd DESMANTutorial
 ```
 
+Set an environment variable to point at the DESMAN scripts:
+```
+export DESMAN=~/repos/DESMAN
+```
+
 Download the pre-computed frequency file on the single copy core genes. 
 
 ```
-wget https://desmantutorial.s3.climb.ac.uk/TARA_PSW_MAG_00074_scg.freq
+cp ~/DESMAN_Data/TARA_PSW_MAG_00074_scg.freq .
 ```
 
-How many core COGs did this MAG contain?
+How many variants and how many core COGs did this MAG contain?
 
 ### Variant selection
 
 Then we run the variant filter to identify variant positions. We also filter for non-core cogs '-c' and set a sample coverage threshold of '-m 1.0':
 
 ```
-python $DESMAN/desman/Variant_Filter.py TARA_PSW_MAG_00074_scg.freq -p -o TARA_PSW_MAG_00074_scg -f 25.0 -c -sf 0.80 -t 2.5 -m 1.0
+Variant_Filter.py TARA_PSW_MAG_00074_scg.freq -p -o TARA_PSW_MAG_00074_scg -f 25.0 -c -sf 0.80 -t 2.5 -m 1.0
 ```
 
 The '-p' option uses the slower but more precision minor variant frequency optimisation.
@@ -82,12 +75,12 @@ Which we can then visualise:
 $DESMAN/scripts/PlotDev.R -l Dev.csv -o Dev.pdf
 ```
 
-![Posterior deviance](../Figures/Dev.pdf)
+![Posterior deviance](../Figures/Dev.png)
 
 This is typical of real data. The number of true strains is not clear. So we try our heuristic estimate:
 
 ```
-python /home/ubuntu/repos/DESMAN/scripts/resolvenhap.py TARA_PSW_MAG_00074_scg
+python $DESMAN/scripts/resolvenhap.py TARA_PSW_MAG_00074_scg
 ```
 
 Should see something like:
@@ -100,7 +93,7 @@ Suggesting three strains are present.
 Now we need the TARA sample meta data:
 
 ```
-wget https://desmantutorial.s3.climb.ac.uk/TARA-samples.csv
+wget wget https://desmantutorial.s3.climb.ac.uk/TARA-samples.csv
 ```
 
 The haplotypes themselves are encoded in the file:
@@ -118,7 +111,7 @@ python $DESMAN/scripts/validateSNP2.py TARA_PSW_MAG_00074_scg_3_0/Filtered_Tau_s
 We can look at abundances and reproducibility of the strains:
 
 ```
-python /home/ubuntu/repos/DESMAN/scripts/taucomp.py TARA_PSW_MAG_00074_scg_3_0/Gamma_starR.csv TARA_PSW_MAG_00074_scg_3_*/Filtered_Tau_star.csv
+python $DESMAN/scripts/taucomp.py TARA_PSW_MAG_00074_scg_3_0/Gamma_starR.csv TARA_PSW_MAG_00074_scg_3_*/Filtered_Tau_star.csv
 ```
 
 The position encoding is ACGT so what are the base predictions at each variant position? 
@@ -171,11 +164,11 @@ and generate the world maps:
 ~/repos/Ebame3/scripts/TARA_HaploMap.R -g TARA_PSW_MAG_00074_scg_3_0/Gamma_star.csv -c ~/repos/Ebame3/data/TARA-clusters.txt -s ~/repos/Ebame3/data/TARA-samplesR.txt 
 ```
 
-![H0](../Figures/WorldMap_H0.pdf)
+![H0](../Figures/WorldMap_H0.png)
 
-![H1](../Figures/WorldMap_H1.pdf)
+![H1](../Figures/WorldMap_H1.png)
 
-![H2](../Figures/WorldMap_H2.pdf)
+![H2](../Figures/WorldMap_H2.png)
 
 ### Accessory gene inference
 
