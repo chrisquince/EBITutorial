@@ -75,7 +75,7 @@ Which we can then visualise:
 $DESMAN/scripts/PlotDev.R -l Dev.csv -o Dev.pdf
 ```
 
-![Posterior deviance](../Figures/Dev.png)
+![Posterior deviance](./Figures/Dev.png)
 
 This is typical of real data. The number of true strains is not clear. So we try our heuristic estimate:
 
@@ -164,11 +164,11 @@ and generate the world maps:
 ~/repos/Ebame3/scripts/TARA_HaploMap.R -g TARA_PSW_MAG_00074_scg_3_0/Gamma_star.csv -c ~/repos/Ebame3/data/TARA-clusters.txt -s ~/repos/Ebame3/data/TARA-samplesR.txt 
 ```
 
-![H0](../Figures/WorldMap_H0.png)
+![H0](./Figures/WorldMap_H0.png)
 
-![H1](../Figures/WorldMap_H1.png)
+![H1](./Figures/WorldMap_H1.png)
 
-![H2](../Figures/WorldMap_H2.png)
+![H2](./Figures/WorldMap_H2.png)
 
 ### Accessory gene inference
 
