@@ -120,6 +120,7 @@ Discussion point what is N50?
 Then cut up contigs and place in new dir:
 
 ```bash
+export CONCOCT=~/repos/CONCOCT
 python $CONCOCT/scripts/cut_up_fasta.py -c 10000 -o 0 -m Assembly/final.contigs.fa > Assembly/final_contigs_c10K.fa
 ```
 
@@ -153,6 +154,7 @@ done
 And calculate coverages:
 
 ```
+export DESMAN=~/repos/DESMAN
 python $DESMAN/scripts/Lengths.py -i Assembly/final_contigs_c10K.fa > Assembly/Lengths.txt
 
 for file in Map/*.sam
@@ -267,103 +269,21 @@ python $DESMAN/scripts/ExtractCogs.py -b final_contigs_gt1000_c10K.out --cdd_cog
 
 Discussion point what is a COG?
 
-Then genes:
-```
-python $DESMAN/scripts/ExtractGenes.py -g final_contigs_gt1000_c10K.gff > final_contigs_gt1000_c10K.genes
-cd ..
-```
-
-Return to the analysis directory and create a new directory to bin the contigs into:
-
-```
-mkdir Split
-cd Split
-$DESMAN/scripts/SplitClusters.pl ../Annotate/final_contigs_gt1000_c10K.fa ../Concoct/clustering_refine.csv
-SplitCOGs.pl ../Annotate/final_contigs_gt1000_c10K.cogs ../Concoct/clustering_refine.csv
-SplitGenes.pl ../Annotate/final_contigs_gt1000_c10K.genes ../Concoct/clustering_refine.csv
-SplitFaa.pl ../Annotate/final_contigs_gt1000_c10K.faa ../Concoct/clustering_refine.csv
-
-```
-
-Kegg ortholog assignment on genes:
-```
-python ~/bin/CompleteClusters.py ../Concoct/clustering_gt1000_scg.tsv > Cluster75.txt
-```
-
-```
-    while read line
-    do 
-    file=${line}/${line}.faa
-    stub=${file%.faa}
-    base=${stub##*/}
-    echo $base
-
-    diamond blastp -d $KEGG_DB/genes/fasta/genes.dmnd -q $file -o ${stub}.m8 > $file.d.out&
-    done < Cluster75.txt
-```
-
-Run this instead:
-
-```
-while read line
-do 
-    echo $file
-  
-    file=${line}/${line}.m8
-  
-    cp ~/Projects_run/InfantGut/Split/$file $file
-  
-done < Cluster75.txt
-```
-
-
-Discussion point why blastp rather than blastx?
-
-The above maps onto Kegg genes these are then mapped to kegg orthologs by the Perl script:
-```
-more ~/bin/Assign_KO.pl
-```
-
-Run as follows:
-```
-COUNT=0
-for file in Cluster*/*m8
-do
-	dir=${file%.m8}
-	echo $file
-	echo $dir
-     Assign_KO.pl < $file > ${dir}.hits&
-    let COUNT=COUNT+1
-
-    if [ $COUNT -eq 8 ]; then
-        wait;
-        COUNT=0
-    fi
-done
-```
-
-Discussion point, trivial parallelisation using bash.
-
-
-We then can create a table of Kegg orthologs across all clusters.
-```
-~/repos/MAGAnalysis/scripts/CollateHits.pl > CollateHits75.csv
-```
 
 ##Taxonomic Classification of Contigs
 
 ```
 cd ~/Projects/InfantGut/
-kraken --db ~/Databases/minikraken_20141208/ --threads 8 --preload --output final_contigs_gt1000_c10K.krak final_contigs_gt1000_c10K.fa
+kraken --db ~/CONCOCT_Data/minikraken_20171013_4GB --threads 8 --preload --output final_contigs_gt1000_c10K.krak final_contigs_gt1000_c10K.fa
 Loading database... complete.
 ```
 
 ```
-kraken-report --db ~/Databases/minikraken_20141208/ final_contigs_gt1000_c10K.krak 
+kraken-report --db ~/CONCOCT_Data/minikraken_20171013_4GB final_contigs_gt1000_c10K.krak 
 ```
 
 ```
-kraken-translate --mpa-format --db ~/Databases/minikraken_20141208/ final_contigs_gt1000_c10K.krak > final_contigs_gt1000_c10K.krak.mpi.tran
+kraken-translate --mpa-format --db ~/CONCOCT_Data/minikraken_20171013_4GB final_contigs_gt1000_c10K.krak > final_contigs_gt1000_c10K.krak.mpi.tran
 ```
 
 ```
@@ -389,76 +309,4 @@ $CONCOCT/scripts/ConfPlot.R -c Taxa_Conf.csv -o Taxa_Conf.pdf
 ```
 
 ![Taxa confusion](./Figures/Taxa_Conf.png)
-
-## Construct a phylogenetic tree
-
-Assume we are starting from the 'Split' directory in which we have seperated out the cluster fasta files and we have done the COG assignments for each cluster. Then the first step is to extract each of the 36 conserved core COGs individually. There is an example bash script GetSCG.sh for doing this in phyloscripts but it will need modifying:
-
-```
-cd ~/Projects/InfantGut/Split
-cp ~/repos/MAGAnalysis/cogs.txt .
-mkdir SCGs
-
-while read line
-do
-    cog=$line
-    echo $cog
-     ~/repos/MAGAnalysis/phyloscripts/SelectCogsSCG.pl ../Concoct/clustering_gt1000_scg.tsv ../Annotate/final_contigs_gt1000_c10K.fna $cog > SCGs/$cog.ffn
-done < cogs.txt
-``` 
-
-Run this after making a directory SCGs and it will create one file for each SCG with the corresponding nucleotide sequences from each cluster but only for this with completeness (> 0.75) hard coded in the perl script somewhere you should check that :)
-
-Then we align each of these cog files against my prepared database containing 1 genome from each bacterial genera and archael species:
-```
-mkdir AlignAll
-
-while read line
-do
-    cog=$line
-    echo $cog
-    cat ~/Databases/NCBI/Cogs/All_$cog.ffn SCGs/${cog}.ffn > AlignAll/${cog}_all.ffn
-    mafft --thread 12 AlignAll/${cog}_all.ffn > AlignAll/${cog}_all.gffn
-done < cogs.txt
-```
-
-Then trim alignments:
-
-```
-for file in  AlignAll/*gffn
-do
-    echo $stub
-    stub=${file%.gffn}
-    trimal -in $file -out ${stub}_al.gfa -gt 0.9 -cons 60
-done
-```
-
-The next script requires the IDs of any cluster or taxa that may appear in fasta files, therefore:
-
-```
-cat AlignAll/*gffn | grep ">" | sed 's/_COG.*//' | sort | uniq | sed 's/>//g' > Names.txt
-```
-
-Which we run as follows:
-
-```
-~/repos/MAGAnalysis/phyloscripts/CombineGenes.pl Names.txt AlignAll/COG0*_al.gfa > AlignAll.gfa
-```
-
-Then we may want to map taxaids to species names before building tree:
-
-```
-~/repos/MAGAnalysis/phyloscripts/MapTI.pl /home/ubuntu/repos/MAGAnalysis/data/TaxaSpeciesR.txt < AlignAll.gfa > AlignAllR.gfa
-```
-
-Finally we get to build our tree:
-
-```
-fasttreeMP -nt -gtr < AlignAllR.gfa 2> SelectR.out > AlignAllR.tree
-```
-
-Visualise this locally with FigTree or on the web with ITOL
-
-![Methanogen tree](../Figures/MethanoTree.png)
-
 
