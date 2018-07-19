@@ -68,13 +68,14 @@ megahit -1 ReadsSub/sample1_R1.fastq -2 ReadsSub/sample1_R2.fastq -o Assembly1
 ```
 
 ```
-contig-stats.pl < Assembly1/final.contigs.fa
+cp ~/repos/Ebame3/scripts/contig-stats.pl ~/bin
+$EBAME3/scripts/contig-stats.pl < Assembly1/final.contigs.fa
 ```
 
 
 Compare to a spades assembly without noise removal:
 ```
-spades.py --only-assembler --meta -1 ReadsSub/sample1_R1.fastq -2 ReadsSub/sample1_R2.fastq -o AsemblyS -t 12 -k 23,55,77
+spades.py --only-assembler --meta -1 ReadsSub/sample1_R1.fastq -2 ReadsSub/sample1_R2.fastq -o AssemblyS -t 12 -k 23,55,77
 ```
 
 Which is better?
