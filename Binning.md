@@ -198,9 +198,25 @@ Now we can run CONCOCT:
 
     tr "," "\t" < Coverage.csv > Coverage.tsv
 
-    concoct --coverage_file Coverage.tsv --composition_file ../Assembly/final_contigs_c10K.fa -t 12 
+    /usr/local/bin/concoct --coverage_file Coverage.tsv --composition_file ../Assembly/final_contigs_c10K.fa -t 12 
 
 ```
+#CheckM analysis
+
+Pull out cluster fasta files:
+```
+mkdir Split
+cd Split
+$DESMAN/scripts/SplitClusters.pl ../Annotate/final_contigs_gt1000_c10K.fa ../Concoct/clustering_gt1000.csv
+```
+
+Run CheckM
+```
+mkdir CheckMBins
+cp Clusters*/*fa CheckMBins  
+```
+
+#Alternative strategy..
 
 Find genes using prodigal:
 ```
