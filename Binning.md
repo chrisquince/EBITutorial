@@ -38,6 +38,12 @@ This will involve a collection of different software programs:
 
 <a name="coassembly"/>
 
+Can clone off talk and tutorials:
+```
+cd repos
+git clone https://github.com/chrisquince/EBITutorial.git 
+```
+
 ## Assembly
 
 Start off by creating a new working directory and linking in the infant gut samples:
@@ -46,10 +52,9 @@ mkdir Projects
 cd Projects
 mkdir InfantGut
 cd InfantGut/
-wget https://infantgut.s3.climb.ac.uk/ReadsSub.tar.gz
 ```
 
-Or copy off shared drive if download slow:
+Copy off shared drive hopefully not too slow:
 ```
 cp /media/penelopeprime/Metagenomics_Bioinformatics_Jul18/CONCOCT_Data/ReadsSub.tar.gz .
 ```
@@ -97,7 +102,7 @@ ls ReadsSub/*R2.fastq | tr "\n" "," | sed 's/,$//' > R2.csv
 ```
 
 ```
-nohup megahit -1 $(<R1.csv) -2 $(<R2.csv) -t 12 -o Assembly > megahit.out&
+megahit -1 $(<R1.csv) -2 $(<R2.csv) -t 12 -o Assembly 
 ```
 
 ```
@@ -110,8 +115,6 @@ sequence #: 9920	total length: 16683496	max length: 628146	N50: 8525	N90: 447
 ```
 
 Discussion point what is N50?
-
-
 
 <a name="readmapping"/>
 
