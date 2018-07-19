@@ -2,7 +2,7 @@
 
 We are going to locate ecotypes in one of the TARA MAGs, a SAR11 relative TARA_PSW_MAG_00074.
 The data are preloaded in the DESMAN_Data directory. Useful scripts are in the Ebame3 repository.
-
+We will need to add one extra repos though:
 ```
 cd ~/repos
 git clone https://github.com/chrisquince/MAGAnalysis.git
@@ -213,12 +213,12 @@ But we will not run this ourselves it is too slow:
 ```
 cd ~/Projects/DESMANTutorial
 rm -r AllFreq
-cp ~/AllFreq.tar.gz .
-tar -xvzf AllFreq.tar.gz
+
+cp -r ~/DESMAN_Data/GeneAssign .
 ```
 
 We can look at the overlap in terms of accessory genes:
 ```
-cd AllFreq
-python EtaGamma.py TARA_PSW_MAG_00074etaS_df.csv ../TARA_PSW_MAG_00074_scg_3_0/Gamma_star.csv ../TARA_PSW_MAG_00074_scg_3_0/Filtered_Tau_star.csv
+cd GeneAssign
+python ~/repos/Ebame3/scripts/EtaGamma.py TARA_PSW_MAG_00074etaS_df.csv ../TARA_PSW_MAG_00074_scg_3_0/Gamma_star.csv ../TARA_PSW_MAG_00074_scg_3_0/Filtered_Tau_star.csv
 ```
