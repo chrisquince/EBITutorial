@@ -203,6 +203,17 @@ Now we can run CONCOCT:
 ```
 ## CheckM analysis
 
+```
+cd ..
+    
+mkdir Annotate
+
+cd Annotate/
+
+python $DESMAN/scripts/LengthFilter.py ../Assembly/final_contigs_c10K.fa -m 1000 >     final_contigs_gt1000_c10K.fa
+
+```
+
 Pull out cluster fasta files:
 ```
 mkdir Split
@@ -220,14 +231,7 @@ cp Clusters*/*fa CheckMBins
 
 Find genes using prodigal:
 ```
-    cd ..
-    
-    mkdir Annotate
-
-    cd Annotate/
-
-    python $DESMAN/scripts/LengthFilter.py ../Assembly/final_contigs_c10K.fa -m 1000 >     final_contigs_gt1000_c10K.fa
-
+    cd ~/Projects/InfantGut/Annotate
     prodigal -i final_contigs_gt1000_c10K.fa -a final_contigs_gt1000_c10K.faa -d     final_contigs_gt1000_c10K.fna  -f gff -p meta -o final_contigs_gt1000_c10K.gff 
 ```
 
