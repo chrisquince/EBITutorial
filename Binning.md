@@ -47,8 +47,20 @@ cd Projects
 mkdir InfantGut
 cd InfantGut/
 wget https://infantgut.s3.climb.ac.uk/ReadsSub.tar.gz
-ln -s ~/Data/InfantGut/ReadsSub .
 ```
+
+Or copy off shared drive if download slow:
+```
+cp /media/penelopeprime/Metagenomics_Bioinformatics_Jul18/CONCOCT_Data/ReadsSub.tar.gz .
+```
+
+Then untar:
+```
+tar -xvzf ReadsSub.tar.gz
+```
+
+These are 1 million subsampled reads from the classic [Sharon et al. 2011 paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3530670/).
+
 
 First let's try assembling a single sample with default parameters:
 ```
