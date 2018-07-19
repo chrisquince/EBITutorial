@@ -201,7 +201,7 @@ Now we can run CONCOCT:
     /usr/local/bin/concoct --coverage_file Coverage.tsv --composition_file ../Assembly/final_contigs_c10K.fa -t 12 
 
 ```
-#CheckM analysis
+## CheckM analysis
 
 Pull out cluster fasta files:
 ```
@@ -216,7 +216,7 @@ mkdir CheckMBins
 cp Clusters*/*fa CheckMBins  
 ```
 
-#Alternative strategy..
+## Alternative strategy..
 
 Find genes using prodigal:
 ```
