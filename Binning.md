@@ -214,7 +214,7 @@ Assign COGs:
 We are also going to refine the output using single-core gene frequencies. First we calculate scg frequencies on the CONCOCT clusters:
 ```
 cd ../Concoct
-python $CONCOCT/scripts/COG_table.py -b ../Annotate/final_contigs_gt1000_c10K_rps.tsv  -m $CONCOCT/scgs/scg_cogs_min0.97_max1.03_unique_genera.txt -c clustering_gt1000.csv  --cdd_cog_file $CONCOCT/scgs/cdd_to_cog.tsv > clustering_gt1000_scg.tsv
+python $CONCOCT/scripts/COG_table.py -b ../Annotate/final_contigs_gt1000_c10K_rps.tsv  -m $CONCOCT/scgs/scg_cogs_min0.97_max1.03_unique_genera.txt -c clustering_gt1000R.csv  --cdd_cog_file $CONCOCT/scgs/cdd_to_cog.tsv > clustering_gt1000_scg.tsv
 ```
 
 This should result in 4 clusters with 75% single copy copy SCGs:
@@ -245,7 +245,7 @@ Discussion point, how do we calculate cluster coverages?
 
 ```
 cp ~/repos/EBITutorial/scripts/ClusterCovNMDS.R .
-cp ~/repos/EBITutorial/Meta.csv
+cp ~/repos/EBITutorial/Meta.csv .
 Rscript ./ClusterCovNMDS.R
 ```
 
@@ -259,17 +259,17 @@ How well does this correlate with time/replicates.
 First lets label COGs on genes:
 ```
 cd ~/Projects/InfantGut/Annotate
-python $DESMAN/scripts/ExtractCogs.py -b final_contigs_gt1000_c10K.out --cdd_cog_file $CONCOCT/scgs/cdd_to_cog.tsv -g final_contigs_gt1000_c10K.gff > final_contigs_gt1000_c10K.cogs
+python $DESMAN/scripts/ExtractCogs.py -b final_contigs_gt1000_c10K_rps.tsv --cdd_cog_file $CONCOCT/scgs/cdd_to_cog.tsv -g final_contigs_gt1000_c10K.gff > final_contigs_gt1000_c10K.cogs
 ```
 
 Discussion point what is a COG?
 
 
-##Taxonomic Classification of Contigs
+## Taxonomic Classification of Contigs
 
 ```
 cd ~/Projects/InfantGut/
-kraken --db ~/CONCOCT_Data/minikraken_20171013_4GB --threads 8 --preload --output final_contigs_gt1000_c10K.krak final_contigs_gt1000_c10K.fa
+~/bin/kraken2 --db ~/Databases/minikraken_20171013_4GB --threads 8 final_contigs_gt1000_c10K.fa > final_contigs_gt1000_c10K.krak 
 Loading database... complete.
 ```
 
@@ -304,4 +304,18 @@ $CONCOCT/scripts/ConfPlot.R -c Taxa_Conf.csv -o Taxa_Conf.pdf
 ```
 
 ![Taxa confusion](./Figures/Taxa_Conf.png)
+
+
+Return to the analysis directory and create a new directory to bin the contigs into:
+
+```
+mkdir Split
+cd Split
+$DESMAN/scripts/SplitClusters.pl ../Annotate/final_contigs_gt1000_c10K.fa ../Concoct/clustering_gt1000.csv
+SplitCOGs.pl ../Annotate/final_contigs_gt1000_c10K.cogs ../Concoct/clustering_gt1000.csv
+SplitGenes.pl ../Annotate/final_contigs_gt1000_c10K.genes ../Concoct/clustering_gt1000.csv
+SplitFaa.pl ../Annotate/final_contigs_gt1000_c10K.faa ../Concoct/clustering_gt1000.csv
+```
+
+
 
