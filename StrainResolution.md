@@ -14,7 +14,7 @@ tar -xvzf InfantGut.tar.gz
 ### Getting core variant frequencies
 
 Then we select the SCGS for each cluster:
-```bash
+```
 cd ~/Projects/InfantGut
 
 cp ~/repos/MAGAnalysis/cogs.txt scgs.txt 
@@ -47,7 +47,7 @@ mkdir SplitBam
 while read -r cluster 
 do
     grep ">" Split/${cluster}/${cluster}.fa | sed 's/>//g' > Split/${cluster}/${cluster}_contigs.txt
-    AddLengths.pl Annotate/final_contigs_gt1000_c10K.len < Split/${cluster}/${cluster}_contigs.txt > Split/${cluster}/${cluster}_contigs.tsv
+    ~/repos/EBITutorial/scripts/AddLengths.pl Annotate/final_contigs_gt1000_c10K.len < Split/${cluster}/${cluster}_contigs.txt > Split/${cluster}/${cluster}_contigs.tsv
     mkdir SplitBam/${cluster}
     echo $cluster
     for bamfile in Map/*.mapped.sorted.bam
