@@ -56,7 +56,7 @@ cd InfantGut/
 
 Copy off shared drive hopefully not too slow:
 ```
-cp /media/penelopeprime/Metagenomics_Bioinformatics_Jul18/CONCOCT_Data/ReadsSub.tar.gz .
+cp /media/penelopeprime/Metagenomics_Bioinformatics_Jun19/Day_3/3_Chris\ Quince/ReadsSub.tar.gz .
 ```
 
 Then untar:
@@ -72,23 +72,12 @@ First let's try assembling a single sample with default parameters:
 megahit -1 ReadsSub/sample1_R1.fastq -2 ReadsSub/sample1_R2.fastq -o Assembly1
 ```
 
-```
-cp ~/repos/Ebame3/scripts/contig-stats.pl ~/bin
-$EBAME3/scripts/contig-stats.pl < Assembly1/final.contigs.fa
-```
-
-
-Compare to a spades assembly without noise removal:
-```
-spades.py --only-assembler --meta -1 ReadsSub/sample1_R1.fastq -2 ReadsSub/sample1_R2.fastq -o AssemblyS -t 12 -k 23,55,77
-```
-
-Which is better?
+Then evaluate:
 
 ```
-contig-stats.pl < AssemblyS/contigs.fasta 
-sequence #: 4783	total length: 7931965	max length: 542671	N50: 18116	N90: 449
+~/repos/EBITutorial/scripts/contig-stats.pl < Assembly1/final.contigs.fa
 ```
+
 
 ## Co-assembly
 
@@ -198,41 +187,17 @@ Now we can run CONCOCT:
 
     tr "," "\t" < Coverage.csv > Coverage.tsv
 
-    /usr/local/bin/concoct --coverage_file Coverage.tsv --composition_file ../Assembly/final_contigs_c10K.fa -t 12 
+    concoct --coverage_file Coverage.tsv --composition_file ../Assembly/final_contigs_c10K.fa -t 12 
 
-```
-## CheckM analysis
-
-```
-cd ..
-    
-mkdir Annotate
-
-cd Annotate/
-
-python $DESMAN/scripts/LengthFilter.py ../Assembly/final_contigs_c10K.fa -m 1000 >     final_contigs_gt1000_c10K.fa
-
-```
-
-Pull out cluster fasta files:
-```
-mkdir Split
-cd Split
-$DESMAN/scripts/SplitClusters.pl ../Annotate/final_contigs_gt1000_c10K.fa ../Concoct/clustering_gt1000.csv
-```
-
-Run CheckM
-```
-mkdir CheckMBins
-cp Clusters*/*fa CheckMBins  
 ```
 
 ## Alternative strategy..
 
 Find genes using prodigal:
 ```
+    mkdir ~/Projects/InfantGut/Annotate
     cd ~/Projects/InfantGut/Annotate
-    prodigal -i final_contigs_gt1000_c10K.fa -a final_contigs_gt1000_c10K.faa -d     final_contigs_gt1000_c10K.fna  -f gff -p meta -o final_contigs_gt1000_c10K.gff 
+    prodigal -i final_contigs_gt1000_c10K.fa -a final_contigs_gt1000_c10K.faa -d final_contigs_gt1000_c10K.fna  -f gff -p meta -o final_contigs_gt1000_c10K.gff 
 ```
 
 Assign COGs change the -c flag which sets number of parallel processes appropriately:
