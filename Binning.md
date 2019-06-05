@@ -197,13 +197,18 @@ Find genes using prodigal:
 ```
     mkdir ~/Projects/InfantGut/Annotate
     cd ~/Projects/InfantGut/Annotate
+    
+    $DESMAN/scripts/LengthFilter.py ../Assembly/final_contigs_c10K.fa -m 1000 > final_contigs_gt1000_c10K.fa
+
     prodigal -i final_contigs_gt1000_c10K.fa -a final_contigs_gt1000_c10K.faa -d final_contigs_gt1000_c10K.fna  -f gff -p meta -o final_contigs_gt1000_c10K.gff 
 ```
 
 Assign COGs change the -c flag which sets number of parallel processes appropriately:
 ```
-    export COGSDB_DIR=~/Databases/rpsblast_cog_db
-    $CONCOCT/scripts/RPSBLAST.sh -f final_contigs_gt1000_c10K.faa -p -c 12 -r 1
+    export COGSDB=~/Databases/rpsblast_cog_db/Cog
+   
+    rpsblast+ -outfmt '6 qseqid sseqid evalue pident length slen qlen' -evalue 0.00001 -query final_contigs_gt1000_c10K.faa -db $COGSDB -out final_contigs_gt1000_c10K_rps.tsv
+   
 ```
 
 We are also going to refine the output using single-core gene frequencies. First we calculate scg frequencies on the CONCOCT clusters:
