@@ -2,56 +2,12 @@
 
 ## Run the DESMAN pipeline to resolve strains in each high quality bin
 
-### What to do if CONCOCT analysis was not completed yesterday:
-
-Connect with SSH to your VM
-
-  2. Mount the volume with
-
-  mount ~/nextcloud
-  
-
-Supplementary material - Installation of the DAVFS client
----------------------------------------------------------
-
-1. First check if you can copy the template for the davfs2 secrets' file?
-```bash
-sudo cp  /etc/davfs2/secrets ~/.davfs2/secrets
-```
-N.B.1: You can also modify the file '~/.davfs2/secrets' with the EDAME parameters by adding this line at the end:
-
-  https://10.158.16.80/remote.php/webdav/ myVolumeUsername myVolumePassword
-
-If the template is also not present, follow the instructions below.
-
-2. get the script to install the DAVFS client:
-```bash
-curl -O https://raw.githubusercontent.com/IFB-ElixirFr/biosphere-commons/master/scripts/utils/biosphere-nextcloud-client.sh
-```
-
-3. run it:
-
-source ./biosphere-nextcloud-client.sh
-
-If no error occurred, sign off the current SSH session, sign in again (to enable the right authorizations), and continue to next step.
-
-4.   
-
-```bash
-mount ~/nextcloud
-````
-
-You will be asked for your username and password.
-  
-  !! Remember that your username for the volume is the left part of your email address. 
-  If the mount is not working, check that the directory '~/nextcloud' and the file '~/.davfs2/secrets' exist. 
-  Otherwise you certainly need to install again the DAVFS client, see below how to do this.
 
 Then copy prerun data set:
 ```
+mkdir Projects
 cd ~/Projects
-mv InfantGut InfantGut_bkup
-cp ~/nextcloud/ebame-data/InfantGut.tar.gz .
+cp xxxx/InfantGut.tar.gz .
 tar -xvzf InfantGut.tar.gz
 ```
 
@@ -79,7 +35,7 @@ cd ..
 
 We will run DESMAN on two complete clusters with more than 50fold coverage. Find these with the following simple script:
 ```
-python3 ~/repos/Ebame4/scripts/CompleteClustersCov.py Concoct/clustering_gt1000_scg.tsv Concoct/clustering_gt1000_covR.csv > Split/Comp50.txt
+python3 ~/repos/EBITutorial/scripts/CompleteClustersCov.py Concoct/clustering_gt1000_scg.tsv Concoct/clustering_gt1000_covR.csv > Split/Comp50.txt
 ```
 
 What species are these clusters likely from?
