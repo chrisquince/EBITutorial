@@ -191,7 +191,7 @@ Now we can run CONCOCT:
 
 ```
 
-## Alternative strategy..
+## Getting single copy core genes
 
 Find genes using prodigal:
 ```
@@ -203,21 +203,21 @@ Find genes using prodigal:
     prodigal -i final_contigs_gt1000_c10K.fa -a final_contigs_gt1000_c10K.faa -d final_contigs_gt1000_c10K.fna  -f gff -p meta -o final_contigs_gt1000_c10K.gff 
 ```
 
-Assign COGs change the -c flag which sets number of parallel processes appropriately:
+Assign COGs:
 ```
     export COGSDB=~/Databases/rpsblast_cog_db/Cog
    
-    rpsblast+ -outfmt '6 qseqid sseqid evalue pident length slen qlen' -evalue 0.00001 -query final_contigs_gt1000_c10K.faa -db $COGSDB -out final_contigs_gt1000_c10K_rps.tsv
+    rpsblast+ -outfmt '6 qseqid sseqid evalue pident score qstart qend sstart send length slen' -evalue 0.00001 -query final_contigs_gt1000_c10K.faa -db $COGSDB -out final_contigs_gt1000_c10K_rps.tsv
    
 ```
 
 We are also going to refine the output using single-core gene frequencies. First we calculate scg frequencies on the CONCOCT clusters:
 ```
 cd ../Concoct
-python $CONCOCT/scripts/COG_table.py -b ../Annotate/final_contigs_gt1000_c10K.out  -m $CONCOCT/scgs/scg_cogs_min0.97_max1.03_unique_genera.txt -c clustering_gt1000.csv  --cdd_cog_file $CONCOCT/scgs/cdd_to_cog.tsv > clustering_gt1000_scg.tsv
+python $CONCOCT/scripts/COG_table.py -b ../Annotate/final_contigs_gt1000_c10K_rps.tsv  -m $CONCOCT/scgs/scg_cogs_min0.97_max1.03_unique_genera.txt -c clustering_gt1000.csv  --cdd_cog_file $CONCOCT/scgs/cdd_to_cog.tsv > clustering_gt1000_scg.tsv
 ```
 
-This should result in 5 clusters with 75% single copy copy SCGs:
+This should result in 4 clusters with 75% single copy copy SCGs:
 
 
 <a name="MAGs"/>
@@ -227,6 +227,7 @@ This should result in 5 clusters with 75% single copy copy SCGs:
 First let us look at the cluster completeness:
 ```
 $CONCOCT/scripts/COGPlot.R -s clustering_gt1000_scg.tsv -o clustering_gt1000_scg.pdf
+evince clustering_gt1000_scg.pdf
 ```
 
 ![SCGs](./Figures/clustering_gt1000_scg.png) 
@@ -243,7 +244,8 @@ sed 's/Map\///g' clustering_gt1000_cov.csv > clustering_gt1000_covR.csv
 Discussion point, how do we calculate cluster coverages?
 
 ```
-cp ~/bin/ClusterCovNMDS.R .
+cp ~/repos/EBITutorial/scripts/ClusterCovNMDS.R .
+cp ~/repos/EBITutorial/Meta.csv
 Rscript ./ClusterCovNMDS.R
 ```
 
