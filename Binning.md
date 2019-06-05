@@ -260,6 +260,8 @@ First lets label COGs on genes:
 ```
 cd ~/Projects/InfantGut/Annotate
 python $DESMAN/scripts/ExtractCogs.py -b final_contigs_gt1000_c10K_rps.tsv --cdd_cog_file $CONCOCT/scgs/cdd_to_cog.tsv -g final_contigs_gt1000_c10K.gff > final_contigs_gt1000_c10K.cogs
+python $DESMAN/scripts/ExtractGenes.py -g final_contigs_gt1000_c10K.gff > final_contigs_gt1000_c10K.genes
+
 ```
 
 Discussion point what is a COG?
