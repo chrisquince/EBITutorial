@@ -200,7 +200,7 @@ sed -i '1iH,G,LP,Dev' Dev.csv
 
 Which we can then visualise:
 ```
-$DESMAN/scripts/PlotDev.R -l Dev.csv -o Dev.pdf
+Rscript $DESMAN/scripts/PlotDev.R -l Dev.csv -o Dev.pdf
 ```
 
 ![Posterior deviance](./Figures/Dev.png)
@@ -208,12 +208,12 @@ $DESMAN/scripts/PlotDev.R -l Dev.csv -o Dev.pdf
 There are two or possibly three haplotypes. We can also run the heuristic to determine haplotype number:
 
 ```bash
-python $DESMAN/scripts/resolvenhap.py Cluster14
+python $DESMAN/scripts/resolvenhap.py Cluster10
 ```
 
 This should output:
 ```
-3,3,0,0.03668261562998405,Cluster14_3_0/Filtered_Tau_star.csv
+3,3,0,0.03668261562998405,Cluster10_3_0/Filtered_Tau_star.csv
 ```
 
 This has the format:
@@ -223,7 +223,7 @@ No of haplotypes in best fit, No. of good haplotypes in best fit, Index of best 
 
 Have a look at the prediction file:
 ```
-more Cluster14_3_0/Filtered_Tau_star.csv
+more Cluster10_3_0/Filtered_Tau_star.csv
 ```
 
 The position encoding is ACGT so what are the base predictions at each variant position? 
@@ -231,7 +231,7 @@ We can turn these into actual sequences with the following commands:
 
 ```bash
 
-    cut -d"," -f 1 < Cluster14_scgsel_var.csv | sort | uniq | sed '1d' > coregenes.txt
+    cut -d"," -f 1 < Cluster10_scgsel_var.csv | sort | uniq | sed '1d' > coregenes.txt
 
     mkdir SCG_Fasta_3_0
     
@@ -246,7 +246,7 @@ ls SCG_Fasta_3_0
 
 
 ```bash
-python $DESMAN/scripts/validateSNP2.py Cluster14_3_0/Filtered_Tau_star.csv Cluster14_3_0/Filtered_Tau_star.csv
+python $DESMAN/scripts/validateSNP2.py Cluster10_3_0/Filtered_Tau_star.csv Cluster10_3_0/Filtered_Tau_star.csv
 ``` 
 
 
@@ -265,19 +265,20 @@ Now look at time series of strain abundance:
 
 ```
 cp ~/repos/Ebame4/scripts/TimeStrain.R .
-Rscript TimeStrain.R -g Cluster14_3_0/Gamma_starR.csv -m ~/Projects/InfantGut/Meta.csv
+cp ~/repos/Ebame4/MetaT.csv .
+Rscript TimeStrain.R -g Cluster14_3_0/Gamma_starR.csv -m MetaT.csv
 ```
 
-![Strain time series](./Figures/StrainSeries.png)
+![Strain time series](./Figures/TimeStrain.png)
 
-Then for Cluster9
+Then for Cluster6
 ```
 
-cd ~/Projects/InfantGut/SCG_Analysis/Cluster9_scg
+cd ~/Projects/InfantGut/SCG_Analysis/Cluster6_scg
 
-varFile='Cluster9_scgsel_var.csv'
+varFile='Cluster6_scgsel_var.csv'
 
-eFile='Cluster9_scgtran_df.csv'
+eFile='Cluster6_scgtran_df.csv'
     
 for g in 1 2 3 4  
 do
@@ -285,7 +286,7 @@ do
     for r in 0 1 2 3 4
     do
 	    echo $r
-        (desman $varFile -e $eFile -o Cluster9_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
+        (desman $varFile -e $eFile -o Cluster6_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
     done
     wait
 done
