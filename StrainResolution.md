@@ -309,7 +309,7 @@ mkdir AllFreq
 Then we get frequencies but now for all genes:
 
 ```
-python3 $DESMAN/scripts/ExtractCountFreqGenes.py -g Split/Cluster14/Cluster14.genes ./SplitBam/Cluster14/ReadcountFilter --output_file AllFreq/Cluster14.freq
+python3 $DESMAN/scripts/ExtractCountFreqGenes.py -g Split/Cluster10/Cluster10.genes ./SplitBam/Cluster10/ReadcountFilter --output_file AllFreq/Cluster10.freq
 
 ```
 
@@ -317,7 +317,7 @@ and find variants on those genes:
 
 ```
 cd AllFreq
-Variant_Filter.py Cluster14.freq -o Cluster14 -m 1.0
+Variant_Filter.py Cluster10.freq -o Cluster10 -m 1.0
 ```
 
 How many variants do we find on the accessory genome?
@@ -325,32 +325,32 @@ How many variants do we find on the accessory genome?
 We also need gene coverages these we compute from the frequencies:
 
 ```
-python3 $DESMAN/scripts/CalcGeneCov.py Cluster14.freq > Cluster14_gene_cov.csv
+python3 $DESMAN/scripts/CalcGeneCov.py Cluster10.freq > Cluster10_gene_cov.csv
 ```
 
 ```
-cut -d"," -f5 ../Split/Cluster14/Cluster14_core.cogs > Cluster14_core_genes.txt
+cut -d"," -f5 ../Split/Cluster10/Cluster10_core.cogs > Cluster10_core_genes.txt
 ```
 
 Calculate coverage on core genes:
 
 ```
-python3 $DESMAN/scripts/CalcDelta.py Cluster14_gene_cov.csv Cluster14_core_genes.txt Cluster14_core
+python3 $DESMAN/scripts/CalcDelta.py Cluster10_gene_cov.csv Cluster10_core_genes.txt Cluster10_core
 ```
 
 Now lets link the best run from DESMAN for convenience:
 
 ```
-ln -s ../SCG_Analysis/Cluster14_scg/Cluster14_3_0 .
+ln -s ../SCG_Analysis/Cluster10_scg/Cluster10_3_0 .
 ```
 
 and finally:
 
 ```
-python3 $DESMAN/desman/GeneAssign.py Cluster14_coremean_sd_df.csv Cluster14_3_0/Gamma_star.csv Cluster14_gene_cov.csv Cluster14_3_0/Eta_star.csv -m 20 -v Cluster14sel_var.csv -o Cluster14 --assign_tau
+python3 $DESMAN/desman/GeneAssign.py Cluster10_coremean_sd_df.csv Cluster10_3_0/Gamma_star.csv Cluster10_gene_cov.csv Cluster10_3_0/Eta_star.csv -m 20 -v Cluster10sel_var.csv -o Cluster10 --assign_tau
 ```
 
 And look at gene and SNP divergence:
 ```
-python ~/repos/Ebame4/scripts/IdentEtaGamma.py Cluster14 Cluster14etaS_df.csv Cluster14_3_0/Selected_variants.csv Cluster14_3_0/Filtered_Tau_starR.csv Cluster14_3_0/Gamma_starR.csv
+python ~/repos/Ebame4/scripts/IdentEtaGamma.py Cluster10 Cluster10etaS_df.csv Cluster10_3_0/Selected_variants.csv Cluster10_3_0/Filtered_Tau_starR.csv Cluster10_3_0/Gamma_starR.csv
 ```
