@@ -352,5 +352,5 @@ python3 $DESMAN/desman/GeneAssign.py Cluster10_coremean_sd_df.csv Cluster10_3_0/
 
 And look at gene and SNP divergence:
 ```
-python ~/repos/Ebame4/scripts/IdentEtaGamma.py Cluster10 Cluster10etaS_df.csv Cluster10_3_0/Selected_variants.csv Cluster10_3_0/Filtered_Tau_starR.csv Cluster10_3_0/Gamma_starR.csv
+python ~/repos/EBITutorial/scripts/IdentEtaGamma.py Cluster10 Cluster10etaS_df.csv Cluster10_3_0/Selected_variants.csv Cluster10_3_0/Filtered_Tau_starR.csv Cluster10_3_0/Gamma_starR.csv
 ```
