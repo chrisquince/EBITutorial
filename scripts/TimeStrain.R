@@ -21,9 +21,11 @@ Meta <- Meta[rownames(GammaP),]
 
 GammaMeta <- cbind.data.frame(GammaP,Meta)
 
-GammaMelt <- melt(GammaMeta)
+#GammaMelt <- melt(GammaMeta)
+GammaMelt <- melt(GammaMeta,id.vars="Day",measure.vars=c("X0","X1","X2"))
+
 #[1] "Day"      "Sample"   "variable" "value"   
-colnames(GammaMelt) <- c("Day","Sample","Strain","Freq")
+colnames(GammaMelt) <- c("Day","Strain","Freq")
 print(colnames(GammaMelt))
 p <- ggplot(data=GammaMelt,aes(x=Day,y=Freq,colour=Strain,group=Strain)) + geom_point()
 
