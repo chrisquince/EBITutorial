@@ -112,7 +112,7 @@ done < Split/Comp50.txt
 
 The directory contains 2 .freq files one for each cluster. If we look at one:
 ```bash
-head -n 10 Variants/Cluster9_scg.freq 
+head -n 10 Variants/Cluster10_scg.freq 
 ```
 We see it comprises a header, plus one line for each core gene position, giving base frequencies in the order A,C,G,T. This is the input required by DESMAN.
 
@@ -156,13 +156,13 @@ wc */*sel_var.csv
 
 We can also go into the Cluster 14 directory and look at the output files:
 ```bash
-cd Cluster14_scg
-more Cluster14_scgsel_var.csv 
+cd Cluster10_scg
+more Cluster10_scgsel_var.csv 
 ```
 
 The other important file is:
 ```bash
-more Cluster14_scgtran_df.csv
+more Cluster10_scgtran_df.csv
 ```
 
 This is an estimate of base error rates which is used as a starting point for the haplotype inference.
@@ -174,11 +174,11 @@ So accounting for the header line we observe 185 and 10 variants in Clusters 14 
 For Cluster 14 then can we attempt to resolve haplotypes. Using the desman executable:
 
 ```
-cd Cluster14_scg
+cd Cluster10_scg
 
-varFile='Cluster14_scgsel_var.csv'
+varFile='Cluster10_scgsel_var.csv'
 
-eFile='Cluster14_scgtran_df.csv'
+eFile='Cluster10_scgtran_df.csv'
     
 for g in 1 2 3 4  
 do
@@ -186,7 +186,7 @@ do
     for r in 0 1 2 3 4
     do
 	    echo $r
-        (desman $varFile -e $eFile -o Cluster14_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
+        (desman $varFile -e $eFile -o Cluster10_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
     done
     wait
 done
