@@ -7,7 +7,7 @@ Then copy prerun data set:
 ```
 mkdir Projects
 cd ~/Projects
-cp xxxx/InfantGut.tar.gz .
+cp /media/penelopeprime/Metagenomics_Bioinformatics_Ju19/Day_3/3_Chris\ Quince/InfantGut.tar.gz .
 tar -xvzf InfantGut.tar.gz
 ```
 
@@ -15,9 +15,13 @@ tar -xvzf InfantGut.tar.gz
 
 Then we select the SCGS for each cluster:
 ```
+export DESMAN=~/repos/DESMAN
+export CONCOCT=~/repos/CONCOCT
+export MAGAnalysis=~/repos/MAGAnalysis
+
 cd ~/Projects/InfantGut
 
-cp ~/repos/MAGAnalysis/cogs.txt scgs.txt 
+cp $MAGAnalysis/cogs.txt scgs.txt 
 while read -r cluster 
 do
     echo $cluster
