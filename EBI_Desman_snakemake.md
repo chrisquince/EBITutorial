@@ -56,6 +56,7 @@ Obviously if it cannot find any file from which to build on with your scripts, i
     dot -Tpdf workflow.dot -o workflow.pdf 
     evince  workflow.pdf 
 
+![Posterior deviance](./Figures/graph.png)
 
 To generate mapping files split by cluster, we first list them in List_Split_bam.txt, then use the following command  : 
 
