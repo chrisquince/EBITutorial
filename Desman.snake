@@ -1,0 +1,80 @@
+import glob
+DESMAN="~/repos/DESMAN"
+CONCOCT="~/repos/CONCOCT"
+MAGAnalysis="~/repos/MAGAnalysis"
+LIST_SAMPLE=[sample.split('_')[0].split("/")[1] for sample in glob.glob("Map/*_cov.csv")]
+
+rule get_bed_file :
+	input : cluster="Split/{cluster}/{cluster}.fa",
+			length="Annotate/final_contigs_gt1000_c10K.len"
+	output: contig="Split/{cluster}/{cluster}_contig.txt",
+			bed="Split/{cluster}/{cluster}_contig.tsv"
+	shell :	"""
+	grep ">" {input.cluster} | sed 's/>//g' > {output.contig}
+	~/repos/EBITutorial/scripts/AddLengths.pl {input.length} < {output.contig} > {output.bed}
+	"""
+
+rule Splitbam :
+	input : bed="Split/{cluster}/{cluster}_contig.tsv",
+			bam="Map/{sample}.mapped.sorted.bam"
+	output: "SplitBam/{cluster}/{sample}_Filter.bam"
+	shell :	"""	samtools view -bhL {input.bed} {input.bam} > {output} """
+
+rule samtools_index_fasta :
+	input : "{file}.fa"
+	output : "{file}.fa.fai"
+	shell : "samtools faidx {input}"
+
+rule samtools_index_bam :
+	input : "{file}.bam"
+	output : "{file}.bam.bai"
+	shell : "samtools index {input}"
+
+
+rule bam_readcount :
+	input : bed="Split/{cluster}/{cluster}_contig.tsv",
+			fasta="Split/{cluster}/{cluster}.fa",
+			fasta_fai="Split/{cluster}/{cluster}.fa.fai",
+			bam="SplitBam/{cluster}/{sample}_Filter.bam",
+			bam_bai="SplitBam/{cluster}/{sample}_Filter.bam.bai"
+	output : "SplitBam/{cluster}/ReadcountFilter/{sample}.cnt"
+	log : "SplitBam/{cluster}/ReadcountFilter/{sample}.err"
+	shell : """
+	bam-readcount -w 1 -q 20 -l {input.bed} -f {input.fasta} {input.bam} 2> {log} > {output}
+	"""
+
+rule core_cog_frequency :
+	input : SCG="Split/{cluster}/{cluster}_core.cogs",
+			cnt=expand("SplitBam/{{cluster}}/ReadcountFilter/{sample}.cnt",sample=LIST_SAMPLE)
+	output : "Variants/{cluster}_scg.freq"
+	params : folder="SplitBam/{cluster}/ReadcountFilter/"
+	log : "Variants/{cluster}.log"
+	shell : """
+	gzip {input.cnt}
+	python {DESMAN}/scripts/ExtractCountFreqGenes.py {input.SCG} {params} --output_file {output} > {log}
+	"""
+
+rule Variant_Filter :
+	input : "Variants/{cluster}_scg.freq"
+	output : var="SCG_Analysis/{cluster}/{cluster}_scgsel_var.csv",
+			 err="SCG_Analysis/{cluster}/{cluster}_scgtran_df.csv"
+	params : 'SCG_Analysis/{cluster}/{cluster}_scg'
+	log : "SCG_Analysis/{cluster}/log"
+	shell : " Variant_Filter.py {input} -o {params} -p -m 1.0 &> {log}"
+
+rule Desman_task :
+	input : var="SCG_Analysis/{cluster}/{cluster}_scgsel_var.csv",
+			err="SCG_Analysis/{cluster}/{cluster}_scgtran_df.csv"
+	output : 'SCG_Analysis/{cluster}/{cluster}_{g}_{r}/fit.txt'
+	params : 'SCG_Analysis/{cluster}/{cluster}_{g}_{r}'
+	log : "SCG_Analysis/{cluster}/{cluster}_{g}_{r}/log"
+	shell : "desman {input.var} -e {input.err} -o {params} -g {wildcards.g} -s {wildcards.r} -m 1.0 -i 100 &> {log}"
+
+rule posterior_Deviance :
+	input : expand("SCG_Analysis/{{cluster}}/{{cluster}}_{g}_{r}/fit.txt",g=range(1,5),r=range(5))
+	output : "SCG_Analysis/{cluster}/Dev.csv"
+	shell : """
+	cat {input} | cut -d"," -f2- > {output}
+	sed -i '1iH,G,LP,Dev' {output}
+	"""
+
