@@ -4,6 +4,12 @@ CONCOCT="~/repos/CONCOCT"
 MAGAnalysis="~/repos/MAGAnalysis"
 LIST_SAMPLE=[sample.split('_')[0].split("/")[1] for sample in glob.glob("Map/*_cov.csv")]
 
+
+rule gen_len_file :
+    input : splits=Annotate/final_contigs_gt1000_c10K.fa
+    output: length="Annotate/final_contigs_gt1000_c10K.len"
+    shell: """ python $DESMAN/scripts/Lengths.py -i {input.splits} > {output.length} """
+
 rule get_bed_file :
 	input : cluster="Split/{cluster}/{cluster}.fa",
 			length="Annotate/final_contigs_gt1000_c10K.len"
@@ -19,16 +25,6 @@ rule Splitbam :
 			bam="Map/{sample}.mapped.sorted.bam"
 	output: "SplitBam/{cluster}/{sample}_Filter.bam"
 	shell :	"""	samtools view -bhL {input.bed} {input.bam} > {output} """
-
-rule SplitbamReport:
-    input: "SplitBam/{cluster}/{sample}_Filter.bam"
-    output: "SplitbamReport.txt"
-    shell :	"""	ls -l -h SplitBam/*/*_Filter.bam > {output} """
-
-rule SplitbamFinish:
-    input: "SplitbamReport.txt"
-    output: "Splitbam.done"
-    shell :	"""	touch Splitbam.done """
     
 rule samtools_index_fasta :
 	input : "{file}.fa"
