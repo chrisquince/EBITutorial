@@ -6,7 +6,7 @@ LIST_SAMPLE=[sample.split('_')[0].split("/")[1] for sample in glob.glob("Map/*_c
 
 
 rule gen_len_file :
-    input : splits=Annotate/final_contigs_gt1000_c10K.fa
+    input : splits="Annotate/final_contigs_gt1000_c10K.fa"
     output: length="Annotate/final_contigs_gt1000_c10K.len"
     shell: """ python $DESMAN/scripts/Lengths.py -i {input.splits} > {output.length} """
 
