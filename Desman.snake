@@ -5,6 +5,12 @@ MAGAnalysis="~/repos/MAGAnalysis"
 LIST_SAMPLE=[sample.split('_')[0].split("/")[1] for sample in glob.glob("Map/*_cov.csv")]
 
 
+rule get_core_cogs :
+    input : cogs="Split/{cluster}/{cluster}.cog"
+            scgs="$MAGAnalysis/cogs.txt"
+    output: core_cogs="Split/{cluster}/{cluster}_core.cogs"
+    shell: """ $DESMAN/scripts/SelectContigsPos.pl {input.scgs} < {input.cogs} > {output.core_cogs} """
+    
 rule gen_len_file :
     input : splits="Annotate/final_contigs_gt1000_c10K.fa"
     output: length="Annotate/final_contigs_gt1000_c10K.len"
