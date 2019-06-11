@@ -165,7 +165,7 @@ We can turn these into actual sequences with the following commands:
 
     mkdir SCG_Fasta_3_0
     
-    python $DESMAN/scripts/GetVariantsCore.py ../../Annotate/final_contigs_gt1000_c10K.fa ../..//Split/Cluster14/Cluster14_core.cogs Cluster14_3_0/Filtered_Tau_star.csv coregenes.txt -o SCG_Fasta_3_0/
+    python $DESMAN/scripts/GetVariantsCore.py ../../Annotate/final_contigs_gt1000_c10K.fa ../..//Split/Cluster10/Cluster10_core.cogs Cluster10_3_0/Filtered_Tau_star.csv coregenes.txt -o SCG_Fasta_3_0/
 ```
 
 This generates one fasta sequence file for each gene with the two strains in:
@@ -194,9 +194,9 @@ Intersection: 209
 Now look at time series of strain abundance:
 
 ```
-cp ~/repos/Ebame4/scripts/TimeStrain.R .
-cp ~/repos/Ebame4/MetaT.csv .
-Rscript TimeStrain.R -g Cluster14_3_0/Gamma_starR.csv -m MetaT.csv
+cp $EBITutorial/scripts/TimeStrain.R .
+cp $EBITutorial/MetaT.csv .
+Rscript TimeStrain.R -g Cluster10_3_0/Gamma_starR.csv -m MetaT.csv
 ```
 
 ![Strain time series](./Figures/TimeStrain.png)
