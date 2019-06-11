@@ -22,7 +22,8 @@ git pull
 
 We will run DESMAN on two complete clusters with more than 50fold coverage. Find these with the following simple script:
 ```
-python3 ~/repos/EBITutorial/scripts/CompleteClustersCov.py Concoct/clustering_gt1000_scg.tsv Concoct/clustering_gt1000_covR.csv > Split/Comp50.txt
+cd InfantGut
+python3 ~/repos/EBITutorial/scripts/CompleteClustersCov.py Concoct/clustering_gt1000_scg.tsv Concoct/clustering_gt1000_covR.csv 
 ```
 
 What species are these clusters likely from?
@@ -36,42 +37,34 @@ cp ~/repos/EBITutorial/Desman.snake .
 
 ```
 
-    # lets draw the workflow as a graph using snakemake and graphviz 
+Lets draw the complete workflow for Cluster10 as a graph using snakemake and graphviz
+```
+ 
     sudo apt install graphviz # we need to install graphviz to draw this graph 
 
     # we specify the end results to be able to see the succesion of task needed to generate it
     snakemake --snakefile Desman.snake --cores 10 --rulegraph SCG_Analysis/Cluster10/Dev.csv > workflow.dot 
     dot -Tpdf workflow.dot -o workflow.pdf 
     evince  workflow.pdf 
-
-![Complete workflow](./Figures/graph.png)
-
-To generate mapping files split by cluster, we first list them in List_Split_bam.txt, then use the following command  : 
-
-```
-# first lets list all task without executing any 
-snakemake --snakefile Desman.snake --cores 10 $(<List_Split_bam.txt) --dryrun 
-
-# lets finally execute the snakemake 
-cd ~/Projects/InfantGut/
-snakemake --snakefile Desman.snake --cores 10 $(<List_Split_bam.txt) 
 ```
 
+![Complete workflow](./Figures/workflow.png)
 
-We compute base frequencies at each position on each contig by using a third party program bam-readcount. In the same fashion this is hidden away in the snakemake. All that is needed is just to list the output files you want before executing the snakemake.
+Another very useful flag is *** --dryrun *** this lists the jobs that would be run by snakemake if you did run it.
+```
+snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10/Dev.csv --dryrun --verbose
+```
+
+Can you get the jobs that would be run for Cluster6?
+
+We will not run the complete pipeline just all the steps required to get the base frequencies on the core genes for both clusters:
 
 ```
-cd ~/Projects/InfantGut/
-snakemake --snakefile Desman.snake --cores 10 $(<List_Split_counts.txt)
-``` 
-
-
-Then we can get the base counts on the core cogs:
-
+snakemake --snakefile Desman.snake --cores 10 Variants/Cluster10_scg.freq 10 Variants/Cluster6_scg.freq --dryrun --verbose
 ```
-cd ~/Projects/InfantGut/
-snakemake --snakefile Desman.snake --cores 10 Variants/Cluster10_scg.freq Variants/Cluster6_scg.freq
-``` 
+
+*** Now run it for real*** This will take 15-20 mins so we will take a short break.
+
 
 The directory contains 2 .freq files one for each cluster. If we look at one:
 ```bash
@@ -81,7 +74,16 @@ We see it comprises a header, plus one line for each core gene position, giving 
 
 ### Detecting variants on core genes
 
-First we detect variants on both clusters that were identified as 75% pure and complete and had a coverage of greater than 100:
+First we detect variants on both clusters that were identified as 75% pure and complete and had a coverage of greater than 100.
+
+```bash
+
+mkdir -p SCG_Analysis/Cluster10
+
+Variant_Filter.py ./Variants/Cluster10.freq -o ./SCG_Analysis/Cluster10 -p -m 1.0
+
+```
+
 
 ```bash
 cd ~/Projects/InfantGut/
