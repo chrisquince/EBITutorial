@@ -59,5 +59,12 @@ Try blasting the sequences against the NCBI.
 Now open up the file high_res_colorM.gfa
 
 And find these nodes. Corresponding to COG0016 in Bin19:
-* start 2524601
-* end 2816027
+* start 2816027
+* end 2524601
+
+You should be able to determine that at least two strains are present from the variant bubbles in the graph.
+
+This is what the STRONG pipeline resolves into strains. This is the output for COG0016 in this case. For this bin we 
+predict two strains confidently.
+
+![Bin19_COG0060](./Figures/Bin19_COG0016.png) 
