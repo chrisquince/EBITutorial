@@ -23,8 +23,15 @@ cd Projects/InfantGut
 
 mkdir AssemblyGraphs
 
+cd AssemblyGraphs 
+
 wget https://desmantutorial.s3.climb.ac.uk/contigs_colorM.gfa
-wget https://desmantutorials3.climb.ac.uk/high_res_colorM.gfa
+wget https://desmantutorial.s3.climb.ac.uk/high_res_colorM.gfa
+```
+
+Start up Bandage:
+```
+Bandage
 ```
 
 Open up the first of these files contigs_colorM.gfa in Bandage. You should see something like this:
@@ -37,3 +44,20 @@ The colors correspond to four MAGs we obtained from clustering the Spades contig
 * Bin12 red
 * Bin19 green, Staph. epidermidis
 
+Why are some of the bins fragmented?
+
+Can you find any contigs that are misassigned
+
+Locate these two contigs with the search feature:
+
+*NODE_55_length_32977_cov_19.323249
+*NODE_327_length_8496_cov_5.646014
+
+These correspond to contigs annotated to the single-copy core gene COG0060 in Bin19. Why are there two of them? 
+Try blasting the sequences against the NCBI.
+
+Now open up the file high_res_colorM.gfa
+
+And find these nodes. Corresponding to COG0016 in Bin19:
+* start 2524601
+* end 2816027
