@@ -6,21 +6,24 @@ LIST_SAMPLE=[sample.split('_')[0].split("/")[1] for sample in glob.glob("Map/*_c
 
 
 rule get_core_cogs :
-    input : cogs="Split/{cluster}/{cluster}.cog"
-            scgs="$MAGAnalysis/cogs.txt"
-    output: core_cogs="Split/{cluster}/{cluster}_core.cogs"
-    shell: """ $DESMAN/scripts/SelectContigsPos.pl {input.scgs} < {input.cogs} > {output.core_cogs} """
+	input : cogs="Split/{cluster}/{cluster}.cog",
+			scgs="$MAGAnalysis/cogs.txt"
+	output: core_cogs="Split/{cluster}/{cluster}_core.cogs"
+	message: " {rule} : use cog annotation from {input.cogs} to identify Single Copy Core genes in {wildcards.cluster} "				
+	shell: """ $DESMAN/scripts/SelectContigsPos.pl {input.scgs} < {input.cogs} > {output.core_cogs} """
     
 rule gen_len_file :
-    input : splits="Annotate/final_contigs_gt1000_c10K.fa"
-    output: length="Annotate/final_contigs_gt1000_c10K.len"
-    shell: """ python $DESMAN/scripts/Lengths.py -i {input.splits} > {output.length} """
+	input : splits="Annotate/final_contigs_gt1000_c10K.fa"
+	output: length="Annotate/final_contigs_gt1000_c10K.len"
+	message: " {rule} : calculate the length of all contigs "
+	shell: """ python $DESMAN/scripts/Lengths.py -i {input.splits} > {output.length} """
 
 rule get_bed_file :
 	input : cluster="Split/{cluster}/{cluster}.fa",
 			length="Annotate/final_contigs_gt1000_c10K.len"
 	output: contig="Split/{cluster}/{cluster}_contig.txt",
 			bed="Split/{cluster}/{cluster}_contig.tsv"
+	message: " {rule} : create a bed file containing coordinate of contigs specific to {wildcards.cluster} "				
 	shell :	"""
 	grep ">" {input.cluster} | sed 's/>//g' > {output.contig}
 	~/repos/EBITutorial/scripts/AddLengths.pl {input.length} < {output.contig} > {output.bed}
@@ -30,16 +33,19 @@ rule Splitbam :
 	input : bed="Split/{cluster}/{cluster}_contig.tsv",
 			bam="Map/{sample}.mapped.sorted.bam"
 	output: "SplitBam/{cluster}/{sample}_Filter.bam"
+	message: " {rule}, applied on {wildcards.sample} : extracting the part of the mapping file relevant to {wildcards.cluster}"	
 	shell :	"""	samtools view -bhL {input.bed} {input.bam} > {output} """
     
 rule samtools_index_fasta :
 	input : "{file}.fa"
 	output : "{file}.fa.fai"
+	message: " {rule}  : indexing {wildcards.file}.fa "	
 	shell : "samtools faidx {input}"
 
 rule samtools_index_bam :
 	input : "{file}.bam"
 	output : "{file}.bam.bai"
+	message: " {rule}  : indexing {wildcards.file}.bam "
 	shell : "samtools index {input}"
 
 
@@ -49,11 +55,29 @@ rule bam_readcount :
 			fasta_fai="Split/{cluster}/{cluster}.fa.fai",
 			bam="SplitBam/{cluster}/{sample}_Filter.bam",
 			bam_bai="SplitBam/{cluster}/{sample}_Filter.bam.bai"
-	output : "SplitBam/{cluster}/ReadcountFilter/{sample}.cnt"
+	output : cnt="SplitBam/{cluster}/ReadcountFilter/{sample}.cnt",
 	log : "SplitBam/{cluster}/ReadcountFilter/{sample}.err"
+	message: " {rule}, applied to {wildcards.cluster} : processing all mapping files to output counts of all 4 nucleotides at each position for sample {wildcards.sample} :"	
 	shell : """
-	bam-readcount -w 1 -q 20 -l {input.bed} -f {input.fasta} {input.bam} 2> {log} > {output}
+	bam-readcount -w 1 -q 20 -l {input.bed} -f {input.fasta} {input.bam} 2> {log} > {output.cnt}
 	"""
+
+checkpoint fuse :
+	input : "Split/Comp50.txt"
+	output : "SplitBam/fuse"
+	shell : "touch SplitBam/fuse"
+
+def get_cluster(wildcards) : 
+  checkpoint_output = checkpoints.fuse.get()
+  List_cluster=[bin.rstrip() for bin in open("Split/Comp50.txt")]
+  List_count=["SplitBam/"+cluster+"/ReadcountFilter/"+sample+".cnt" for cluster in List_cluster for sample in LIST_SAMPLE]
+  print(List_count)
+  return List_count
+
+rule bam_readcount_is_done :
+	input : get_cluster
+	output : "SplitBam/readcount_is_done"
+	shell : "touch SplitBam/readcount_is_done"
 
 rule core_cog_frequency :
 	input : SCG="Split/{cluster}/{cluster}_core.cogs",
@@ -61,6 +85,7 @@ rule core_cog_frequency :
 	output : "Variants/{cluster}_scg.freq"
 	params : folder="SplitBam/{cluster}/ReadcountFilter/"
 	log : "Variants/{cluster}.log"
+	message: " {rule}, applied to {wildcards.cluster} : outputing frequency of all 4 nucleotides at each position for each sample, on core genes"	
 	shell : """
 	gzip {input.cnt}
 	python {DESMAN}/scripts/ExtractCountFreqGenes.py {input.SCG} {params} --output_file {output} > {log}
@@ -71,13 +96,15 @@ rule Variant_Filter :
 	output : var="SCG_Analysis/{cluster}/{cluster}_scgsel_var.csv",
 			 err="SCG_Analysis/{cluster}/{cluster}_scgtran_df.csv"
 	params : 'SCG_Analysis/{cluster}/{cluster}_scg'
+	message: " {rule}, applied to {wildcards.cluster} : selecting variant positions"	
 	log : "SCG_Analysis/{cluster}/log"
 	shell : " Variant_Filter.py {input} -o {params} -p -m 1.0 &> {log}"
 
-rule Desman_task :
+rule Desman_Task :
 	input : var="SCG_Analysis/{cluster}/{cluster}_scgsel_var.csv",
 			err="SCG_Analysis/{cluster}/{cluster}_scgtran_df.csv"
 	output : 'SCG_Analysis/{cluster}/{cluster}_{g}_{r}/fit.txt'
+	message: " {rule}, applied to {wildcards.cluster} : Running Desman the repeat nb {wildcards.r} for {wildcards.g} strains"	
 	params : 'SCG_Analysis/{cluster}/{cluster}_{g}_{r}'
 	log : "SCG_Analysis/{cluster}/{cluster}_{g}_{r}/log"
 	shell : "desman {input.var} -e {input.err} -o {params} -g {wildcards.g} -s {wildcards.r} -m 1.0 -i 100 &> {log}"
@@ -85,8 +112,15 @@ rule Desman_task :
 rule posterior_Deviance :
 	input : expand("SCG_Analysis/{{cluster}}/{{cluster}}_{g}_{r}/fit.txt",g=range(1,5),r=range(5))
 	output : "SCG_Analysis/{cluster}/Dev.csv"
+	message: " {rule}, applied to {wildcards.cluster} : Concatenating posterior deviance from all different run"
 	shell : """
 	cat {input} | cut -d"," -f2- > {output}
 	sed -i '1iH,G,LP,Dev' {output}
 	"""
 
+rule Best_Haplotype :
+	input : "SCG_Analysis/{cluster}/Dev.csv"
+	output : "SCG_Analysis/{cluster}/best_run.txt"
+	params: "SCG_Analysis/{cluster}/{cluster}"
+	message: " {rule}, applied to {wildcards.cluster} : Calculating optimal number of strain and best repeat"
+	shell : "python {DESMAN}/scripts/resolvenhap.py {params} > {output} 2> /dev/null"
