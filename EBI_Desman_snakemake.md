@@ -12,33 +12,13 @@ cd ~/Projects
 cp /media/penelopeprime/Metagenomics_Bioinformatics_Jun19/Day_3/3_Chris\ Quince/InfantGut.tar.gz .
 tar -xvzf InfantGut.tar.gz
 ```
-Then update EBITutorial repo. This is ***very*** import:
+Then update EBITutorial repo. This is ***very*** important:
 ```
 cd ~/repos/EBITutorial
 git pull
 ```
 
 ### Getting core variant frequencies
-
-Then we select the SCGS for each cluster:
-```
-cd ~/Projects/InfantGut
-
-cp $MAGAnalysis/cogs.txt scgs.txt 
-while read -r cluster 
-do
-    echo $cluster
-    $DESMAN/scripts/SelectContigsPos.pl scgs.txt < Split/${cluster}/${cluster}.cog > Split/${cluster}/${cluster}_core.cogs
-done < Split/Cluster75.txt
-```
-
-The first step in pre-processing for DESMAN would be to split up the bam files by each cluster in turn:
-
-```
-cd Annotate
-python $DESMAN/scripts/Lengths.py -i final_contigs_gt1000_c10K.fa > final_contigs_gt1000_c10K.len
-cd ..
-```
 
 We will run DESMAN on two complete clusters with more than 50fold coverage. Find these with the following simple script:
 ```
@@ -64,7 +44,7 @@ cp ~/repos/EBITutorial/Desman.snake .
     dot -Tpdf workflow.dot -o workflow.pdf 
     evince  workflow.pdf 
 
-![Posterior deviance](./Figures/graph.png)
+![Complete workflow](./Figures/graph.png)
 
 To generate mapping files split by cluster, we first list them in List_Split_bam.txt, then use the following command  : 
 
