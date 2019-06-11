@@ -50,7 +50,7 @@ Lets draw the complete workflow for Cluster10 as a graph using snakemake and gra
 
 ![Complete workflow](./Figures/workflow.png)
 
-Another very useful flag is *** --dryrun *** this lists the jobs that would be run by snakemake if you did run it.
+Another very useful flag is ***--dryrun*** this lists the jobs that would be run by snakemake if you did run it.
 ```
 snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10/Dev.csv --dryrun --verbose
 ```
@@ -63,7 +63,7 @@ We will not run the complete pipeline just all the steps required to get the bas
 snakemake --snakefile Desman.snake --cores 10 Variants/Cluster10_scg.freq 10 Variants/Cluster6_scg.freq --dryrun --verbose
 ```
 
-*** Now run it for real*** This will take 15-20 mins so we will take a short break.
+***Now run it for real*** This will take 15-20 mins so we will take a short break.
 
 
 The directory contains 2 .freq files one for each cluster. If we look at one:
@@ -80,15 +80,16 @@ First we detect variants on both clusters that were identified as 75% pure and c
 
 mkdir -p SCG_Analysis/Cluster10
 
-Variant_Filter.py ./Variants/Cluster10.freq -o ./SCG_Analysis/Cluster10 -p -m 1.0
+Variant_Filter.py ./Variants/Cluster10/Cluster10_scg.freq -o ./SCG_Analysis/Cluster10/Cluster10_scg -p -m 1.0
 
 ```
 
-
+Now automatically run both:
 ```bash
 cd ~/Projects/InfantGut/
 snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10/Cluster10_scgsel_var.csv SCG_Analysis/Cluster6/Cluster6_scgsel_var.csv 
 ```
+
 
 The Variant_Filter.py script produces an output file Cluster10_sel_var.csv which lists those positions that are identified as variants by the log-ratio test with FDR < 1.0e-3. We can compare variant frequencies in the two clusters:
 
