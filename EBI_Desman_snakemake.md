@@ -57,7 +57,15 @@ snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10/Dev.csv --d
 
 Can you get the jobs that would be run for Cluster6?
 
-We will not run the complete pipeline just all the steps required to get the base frequencies on the core genes for both clusters:
+We will not run the complete pipeline. We have added a checkpoint after the bam files are split and bases on each contig position are 
+counted. We will run until this point:
+```
+snakemake --snakefile Desman.snake --cores 10 SplitBam/readcount_is_done  
+```
+
+Take a look at the output files...
+
+Now we will continue the pre-processing to get the base frequencies on the core genes for both clusters:
 
 ```
 snakemake --snakefile Desman.snake --cores 10 Variants/Cluster10_scg.freq Variants/Cluster6_scg.freq --dryrun --verbose
@@ -114,10 +122,19 @@ more Cluster10_scgtran_df.csv
 This is an estimate of base error rates which is used as a starting point for the haplotype inference.
 
 
-### Inferring haplotypes
+### Inferring haplotypes with Desman
 
 So accounting for the header line we observe 134 and 16 variants in Clusters 10 and 6 respectively. 
-For Cluster 10 then can we attempt to resolve haplotypes. 
+For Cluster 10 then can we attempt to resolve haplotypes. First we will run the desman program once for a single 
+number of haplotypes as an illustration:
+
+```
+cd ~/Projects/InfantGut/SCG_Analysis/Cluster10
+
+desman Cluster10_scgsel_var.csv -e Cluster10_scgtran_df.csv -o test3 -g 3 -s 21718 -m 1.0 -i 100
+```
+
+Now we will run with 1,..,5 haplotypes with 5 replicates each.
 ```
 cd ~/Projects/InfantGut/
 snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10/Dev.csv

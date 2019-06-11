@@ -27,4 +27,13 @@ wget https://desmantutorial.s3.climb.ac.uk/contigs_colorM.gfa
 wget https://desmantutorials3.climb.ac.uk/high_res_colorM.gfa
 ```
 
+Open up the first of these files contigs_colorM.gfa in Bandage. You should see something like this:
+
+![Bandage contigs](./Figures/contigs_bandage.png)
+
+The colors correspond to four MAGs we obtained from clustering the Spades contigs: 
+* Bin3 magenta, E. faecalis
+* Bin7 blue 
+* Bin12 red
+* Bin19 green, Staph. epidermidis
 
