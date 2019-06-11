@@ -201,26 +201,8 @@ Rscript TimeStrain.R -g Cluster10_3_0/Gamma_starR.csv -m MetaT.csv
 
 ![Strain time series](./Figures/TimeStrain.png)
 
-Then for Cluster6
-```
+Now repeat the Desman analysis for ***Cluster6***...
 
-cd ~/Projects/InfantGut/SCG_Analysis/Cluster6_scg
-
-varFile='Cluster6_scgsel_var.csv'
-
-eFile='Cluster6_scgtran_df.csv'
-    
-for g in 1 2 3 4  
-do
-    echo $g
-    for r in 0 1 2 3 4
-    do
-	    echo $r
-        (desman $varFile -e $eFile -o Cluster6_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
-    done
-    wait
-done
-```
 
 Are any subpopulations found?
 
