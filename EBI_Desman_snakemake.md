@@ -26,7 +26,7 @@ cd InfantGut
 python3 ~/repos/EBITutorial/scripts/CompleteClustersCov.py Concoct/clustering_gt1000_scg.tsv Concoct/clustering_gt1000_covR.csv 
 ```
 
-What species are these clusters likely from?
+Cluster10 is Staph. epidermidis and Cluster6 E. faecalis, how would we of determined that?
 
 Starting from here, we're going to use snakemake to generate files. Snakemake is a python based workflow management tool. It formalise a collections 
 of scripts as rules possessing input and output. It is able to derive from the files you want to generate, the succession of scripts (rules) needed. 
