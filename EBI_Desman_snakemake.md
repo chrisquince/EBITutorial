@@ -60,7 +60,7 @@ Can you get the jobs that would be run for Cluster6?
 We will not run the complete pipeline just all the steps required to get the base frequencies on the core genes for both clusters:
 
 ```
-snakemake --snakefile Desman.snake --cores 10 Variants/Cluster10_scg.freq 10 Variants/Cluster6_scg.freq --dryrun --verbose
+snakemake --snakefile Desman.snake --cores 10 Variants/Cluster10_scg.freq Variants/Cluster6_scg.freq --dryrun --verbose
 ```
 
 ***Now run it for real*** This will take 15-20 mins so we will take a short break.
