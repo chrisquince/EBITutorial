@@ -88,14 +88,14 @@ First we detect variants on both clusters that were identified as 75% pure and c
 
 mkdir -p SCG_Analysis/Cluster10
 
-Variant_Filter.py ./Variants/Cluster10/Cluster10_scg.freq -o ./SCG_Analysis/Cluster10/Cluster10_scg -p -m 1.0
+Variant_Filter.py ./Variants/Cluster10_scg.freq -o ./SCG_Analysis/Cluster10/Cluster10_scg -p -m 1.0
 
 ```
 
 Now automatically run both:
 ```bash
 cd ~/Projects/InfantGut/
-snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10_scgsel_var.csv SCG_Analysis/Cluster6/Cluster6_scgsel_var.csv 
+snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10/Cluster10_scgsel_var.csv SCG_Analysis/Cluster6/Cluster6_scgsel_var.csv 
 ```
 
 
