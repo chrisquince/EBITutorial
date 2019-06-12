@@ -95,7 +95,7 @@ Variant_Filter.py ./Variants/Cluster10/Cluster10_scg.freq -o ./SCG_Analysis/Clus
 Now automatically run both:
 ```bash
 cd ~/Projects/InfantGut/
-snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10/Cluster10_scgsel_var.csv SCG_Analysis/Cluster6/Cluster6_scgsel_var.csv 
+snakemake --snakefile Desman.snake --cores 10 SCG_Analysis/Cluster10_scgsel_var.csv SCG_Analysis/Cluster6/Cluster6_scgsel_var.csv 
 ```
 
 
@@ -132,6 +132,11 @@ number of haplotypes as an illustration:
 cd ~/Projects/InfantGut/SCG_Analysis/Cluster10
 
 desman Cluster10_scgsel_var.csv -e Cluster10_scgtran_df.csv -o test3 -g 3 -s 21718 -m 1.0 -i 100
+```
+
+Tidy that up:
+```
+rm -r test3
 ```
 
 Now we will run with 1,..,5 haplotypes with 5 replicates each.
