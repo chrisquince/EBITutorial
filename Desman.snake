@@ -3,7 +3,7 @@ DESMAN="~/repos/DESMAN"
 CONCOCT="~/repos/CONCOCT"
 MAGAnalysis="~/repos/MAGAnalysis"
 LIST_SAMPLE=[sample.split('_')[0].split("/")[1] for sample in glob.glob("Map/*_cov.csv")]
-
+LIST_CLUSTER=[bin.rstrip() for bin in open("Split/Comp50.txt")]
 
 rule get_core_cogs :
 	input : cogs="Split/{cluster}/{cluster}.cog",
@@ -62,20 +62,9 @@ rule bam_readcount :
 	bam-readcount -w 1 -q 20 -l {input.bed} -f {input.fasta} {input.bam} 2> {log} > {output.cnt}
 	"""
 
-checkpoint fuse :
-	input : "Split/Comp50.txt"
-	output : "SplitBam/fuse"
-	shell : "touch SplitBam/fuse"
-
-def get_cluster(wildcards) : 
-  checkpoint_output = checkpoints.fuse.get()
-  List_cluster=[bin.rstrip() for bin in open("Split/Comp50.txt")]
-  List_count=["SplitBam/"+cluster+"/ReadcountFilter/"+sample+".cnt" for cluster in List_cluster for sample in LIST_SAMPLE]
-  print(List_count)
-  return List_count
 
 rule bam_readcount_is_done :
-	input : get_cluster
+	input : ["SplitBam/"+cluster+"/ReadcountFilter/"+sample+".cnt" for cluster in LIST_CLUSTER for sample in LIST_SAMPLE]
 	output : "SplitBam/readcount_is_done"
 	shell : "touch SplitBam/readcount_is_done"
 
